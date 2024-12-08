@@ -25,6 +25,8 @@ driver = webdriver.Chrome(options=chrome_options)
 
 links = os.getenv("LINKS", "").splitlines()
 
+links = [link for link in links if not link.startswith("#")]
+
 def download_file(url):
     try:
         driver.get(url)
