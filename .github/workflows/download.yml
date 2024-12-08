@@ -1,0 +1,33 @@
+name: Download
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+jobs:
+  Download:
+    name: Download
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Install Python
+        uses: actions/setup-python@main
+        with:
+          python-version: 3.11
+      - name: Preparing
+        run: |
+          pip install -r requirements.txt
+      - name: Download
+        run: python download.py
+        env:
+          LINKS: ${{ vars.links }}
+      - name: Release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          artifacts: |
+            ./download/*
+          name: Download
+          tag: all
+          body: "Download"
+          allowUpdates: true
