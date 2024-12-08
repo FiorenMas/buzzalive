@@ -22,12 +22,3 @@ jobs:
         run: python download.py
         env:
           LINKS: ${{ vars.links }}
-      - name: Release
-        uses: ncipollo/release-action@v1.14.0
-        with:
-          artifacts: |
-            ./download/*
-          name: Download
-          tag: all
-          body: "Download"
-          allowUpdates: true
