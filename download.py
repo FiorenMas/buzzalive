@@ -24,8 +24,6 @@ def get_chrome_options(download_dir):
     chrome_options.add_experimental_option("prefs", prefs)
     return chrome_options
 
-links = os.getenv("LINKS", "").splitlines()
-
 def download_file(url, download_dir):
     driver = None
     try:
@@ -59,11 +57,27 @@ def remove_downloads(directory):
     except Exception as e:
         print(f"Error while canceling downloads: {e}")
 
-# Process each link
-for link in links:
-    if link.strip().startswith("#"):
-        continue
-    download_file(link, download_dir)
+# Process links from multiple environment variables
+i = 0
+while True:
+    links_key = f"LINKS{i:02d}" if i > 0 else "LINKS" # Tạo key theo format LINKS01, LINKS02,...
+    links_str = os.getenv(links_key, None)
+    
+    if links_str is None:
+        if i == 0: # Nếu không có LINKS nào thì kết thúc
+            print("No LINKS environment variables found.")
+            break
+        else: # Đã duyệt qua LINKS và LINKS01,... không còn thì kết thúc
+            break
+    
+    links = links_str.splitlines()
+    
+    for link in links:
+        if link.strip().startswith("#"):
+            continue
+        download_file(link, download_dir)
+    
+    i += 1
 
 # Clean up temporary downloads
 time.sleep(3)
