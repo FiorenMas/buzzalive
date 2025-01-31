@@ -1,7 +1,7 @@
 name: Download
 on:
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 jobs:
   Download:
@@ -22,5 +22,7 @@ jobs:
         run: python download.py
         env:
           LINKS: ${{ vars.links }}
+          LINKS01: ${{ vars.links01 }}
+          # Thêm các biến LINKS0X cần thiết ở đây
       - name: Keep workflow run
         uses: gautamkrishnar/keepalive-workflow@v1
