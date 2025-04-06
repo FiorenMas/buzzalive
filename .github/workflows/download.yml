@@ -11,18 +11,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      
       - name: Install Python
         uses: actions/setup-python@main
         with:
           python-version: 3.11
+      
       - name: Preparing
         run: |
           pip install -r requirements.txt
+      
+      - name: Check disk space before download
+        run: |
+          echo "Disk space before download:"
+          df -h /home/runner | grep -vE '^Filesystem|tmpfs|cdrom'
+      
       - name: Download
         run: python download.py
         env:
           LINKS: ${{ vars.links }}
           LINKS01: ${{ vars.links01 }}
-          # Thêm các biến LINKS0X cần thiết ở đây
+      
+      - name: Check disk space after download
+        run: |
+          echo "Disk space after download:"
+          df -h /home/runner | grep -vE '^Filesystem|tmpfs|cdrom'
+      
       - name: Keep workflow run
         uses: gautamkrishnar/keepalive-workflow@v1
