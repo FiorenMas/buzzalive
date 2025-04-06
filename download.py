@@ -27,7 +27,6 @@ def get_chrome_options(download_dir):
 def download_file(url, download_dir):
     driver = None
     try:
-        # Initialize ChromeDriver
         chrome_options = get_chrome_options(download_dir)
         driver = webdriver.Chrome(options=chrome_options)
         
@@ -44,30 +43,34 @@ def download_file(url, download_dir):
     except Exception as e:
         print(f"Error while processing {url}: {e}")
     finally:
-        # Ensure the driver quits after use
         if driver:
             driver.quit()
 
-def remove_downloads(directory):
+# Hàm xóa tất cả file trong thư mục
+def clear_download_directory(directory):
     try:
         for file in os.listdir(directory):
-            if file.endswith(".crdownload"):
-                file_path = os.path.join(directory, file)
+            file_path = os.path.join(directory, file)
+            if os.path.isfile(file_path):
                 os.remove(file_path)
+        print(f"Cleared all files in {directory}")
     except Exception as e:
-        print(f"Error while canceling downloads: {e}")
+        print(f"Error while clearing directory {directory}: {e}")
 
 # Process links from multiple environment variables
 i = 0
+file_count = 0  # Đếm số lượng file đã tải
+MAX_FILES_BEFORE_CLEAR = 50  # Giới hạn số file trước khi xóa
+
 while True:
-    links_key = f"LINKS{i:02d}" if i > 0 else "LINKS" # Tạo key theo format LINKS01, LINKS02,...
+    links_key = f"LINKS{i:02d}" if i > 0 else "LINKS"
     links_str = os.getenv(links_key, None)
     
     if links_str is None:
-        if i == 0: # Nếu không có LINKS nào thì kết thúc
+        if i == 0:
             print("No LINKS environment variables found.")
             break
-        else: # Đã duyệt qua LINKS và LINKS01,... không còn thì kết thúc
+        else:
             break
     
     links = links_str.splitlines()
@@ -76,9 +79,15 @@ while True:
         if link.strip().startswith("#"):
             continue
         download_file(link, download_dir)
+        file_count += 1
+        
+        # Kiểm tra nếu đã tải đủ số file tối đa thì xóa thư mục
+        if file_count >= MAX_FILES_BEFORE_CLEAR:
+            clear_download_directory(download_dir)
+            file_count = 0  # Reset bộ đếm
     
     i += 1
 
-# Clean up temporary downloads
+# Xóa lần cuối sau khi hoàn tất
 time.sleep(3)
-remove_downloads(download_dir)
+clear_download_directory(download_dir)
