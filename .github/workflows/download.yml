@@ -36,4 +36,15 @@ jobs:
         run: |
           echo "Disk space after download:"
           df -h /home/runner | grep -vE '^Filesystem|tmpfs|cdrom'
+
+      - run: echo "keepalive" > keepalive
+      - uses: stefanzweifel/git-auto-commit-action@v5.2.0
+        with:
+          branch: keepalive
+          skip_checkout: true
+          skip_dirty_check: true
+          file_pattern: 'keepalive'
+          push_options: '--force'
+          commit_message: keepalive
+          
         
