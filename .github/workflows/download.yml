@@ -36,6 +36,4 @@ jobs:
         run: |
           echo "Disk space after download:"
           df -h /home/runner | grep -vE '^Filesystem|tmpfs|cdrom'
-      
-      - name: Keep workflow run
         
