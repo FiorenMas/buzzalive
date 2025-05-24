@@ -31,6 +31,7 @@ jobs:
         env:
           LINKS: ${{ vars.links }}
           LINKS01: ${{ vars.links01 }}
+          LINKS02: ${{ vars.links02 }}
       
       - name: Check disk space after download
         run: |
