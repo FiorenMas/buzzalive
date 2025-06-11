@@ -11,18 +11,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      
       - name: Install Python
         uses: actions/setup-python@main
         with:
           python-version: 3.11
+      
       - name: Preparing
         run: |
           pip install -r requirements.txt
+      
+      - name: Check disk space before download
+        run: |
+          echo "Disk space before download:"
+          df -h /home/runner | grep -vE '^Filesystem|tmpfs|cdrom'
+      
       - name: Download
         run: python download.py
         env:
           LINKS: ${{ vars.links }}
           LINKS01: ${{ vars.links01 }}
-          # Thêm các biến LINKS0X cần thiết ở đây
-      - name: Keep workflow run
-        uses: liskin/gh-workflow-keepalive@v1
+          LINKS02: ${{ vars.links02 }}
+      
+      - name: Check disk space after download
+        run: |
+          echo "Disk space after download:"
+          df -h /home/runner | grep -vE '^Filesystem|tmpfs|cdrom'
+
+      - run: echo "keepalive" > keepalive
+      - uses: stefanzweifel/git-auto-commit-action@v5.2.0
+        with:
+          branch: keepalive
+          skip_checkout: true
+          skip_dirty_check: true
+          file_pattern: 'keepalive'
+          push_options: '--force'
+          commit_message: keepalive
+          
+        
